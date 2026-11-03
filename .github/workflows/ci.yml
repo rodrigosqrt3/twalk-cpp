@@ -1,0 +1,49 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  # Compile and run the example with GSL, treating warnings as errors.
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install GSL (Linux)
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y libgsl-dev
+
+      - name: Install GSL (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          brew install gsl
+          echo "CPPFLAGS=-I$(brew --prefix)/include" >> "$GITHUB_ENV"
+          echo "LDFLAGS=-L$(brew --prefix)/lib" >> "$GITHUB_ENV"
+
+      - name: Build
+        run: make CXXFLAGS="-O2 -std=c++17 -Wall -Wextra -Werror"
+
+      - name: Run the example
+        run: ./build/normal 10 20000 build/chain.csv
+
+  # Check that the chains are identical to those of Rtwalk on CRAN.
+  compare-with-rtwalk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          use-public-rspm: true
+
+      - name: Install Rtwalk and Rcpp
+        run: Rscript -e 'install.packages(c("Rtwalk", "Rcpp"))'
+
+      - name: Compare with Rtwalk
+        run: make check
