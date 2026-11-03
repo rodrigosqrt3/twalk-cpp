@@ -1,11 +1,14 @@
 # twalk-cpp
 
+[![CI](https://github.com/rodrigosqrt3/twalk-cpp/actions/workflows/ci.yml/badge.svg)](https://github.com/rodrigosqrt3/twalk-cpp/actions/workflows/ci.yml)
+
 A header-only C++ implementation of the t-walk (Christen & Fox, 2010), with
 no dependency on R. The objective function is written in C++ and the program
 is compiled directly with g++.
 
 This is the same kernel as the R package
-[Rtwalk](https://cran.r-project.org/package=Rtwalk) (version 2.2.0). When it
+[Rtwalk](https://cran.r-project.org/package=Rtwalk) (version 2.2.0; source on
+[GitHub](https://github.com/rodrigosqrt3/Rtwalk)). When it
 is driven by R's random number generator, it produces exactly the same chains
 as Rtwalk, draw by draw (see [Validation](#validation)). For standalone use it
 draws random numbers from the GNU Scientific Library (GSL).
